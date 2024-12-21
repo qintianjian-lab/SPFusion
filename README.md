@@ -25,6 +25,15 @@
    ```bash
    pip install -r requirements.txt
    ```
+   
+## Configuration
+
+See more configuration in [config/config.py](./config/config.py).
+
+## Weights Download
+
+- `.ckpt` format for PyTorch: [weights.ckpt](./weights/weights.ckpt)
+- `.onnx` format for ONNX: [model.onnx](model.onnx)
 
 ## Dataset Directory Structure
 
@@ -70,15 +79,6 @@
 │   │   ├── ...
 └── ...
 ```
-
-## Configuration
-
-See more configuration in [config/config.py](./config/config.py).
-
-## Weights Download
-
-- `.ckpt` format for PyTorch: [weights.ckpt](./weights/weights.ckpt)
-- `.onnx` format for ONNX: [model.onnx](model.onnx)
 
 ## Citation
 
