@@ -62,17 +62,17 @@ See more configuration in [config/config.py](./config/config.py).
 │   │   │   │   └── ...
 │   │   │   └── label
 │   │   │       └── label.csv
-│   │   ├── test
-│   │   │   ├── spectrum
-│   │   │   │   ├── xxx.npy
-│   │   │   │   ├── yyy.npy
-│   │   │   │   └── ...
-│   │   │   ├── photometric
-│   │   │   │   ├── xxx.npy
-│   │   │   │   ├── yyy.npy
-│   │   │   │   └── ...
-│   │   │   └── label
-│   │   │       └── label.csv
+│   │   └── test
+│   │       ├── spectrum
+│   │       │   ├── xxx.npy
+│   │       │   ├── yyy.npy
+│   │       │   └── ...
+│   │       ├── photometric
+│   │       │   ├── xxx.npy
+│   │       │   ├── yyy.npy
+│   │       │   └── ...
+│   │       └── label
+│   │           └── label.csv
 │   ├── fold 2
 │   │   ├── ...
 │   ├── fold 3
