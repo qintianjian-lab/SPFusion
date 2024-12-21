@@ -33,7 +33,7 @@ See more configuration in [config/config.py](./config/config.py)
 ## Weights Download
 
 - `.ckpt` format for PyTorch: [weights.ckpt](./weights/weights.ckpt)
-- `.onnx` format for ONNX: [model.onnx](model.onnx)
+- `.onnx` format for ONNX: [model.onnx](./weights/model.onnx)
 
 ## Dataset Directory Structure
 
