@@ -28,7 +28,7 @@
    
 ## Configuration
 
-See more configuration in [config/config.py](./config/config.py).
+See more configuration in [config/config.py](./config/config.py)
 
 ## Weights Download
 
