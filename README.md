@@ -33,37 +33,37 @@
 │   ├── fold 1
 │   │   ├── train
 │   │   │   ├── spectrum
-|	|	|	|	├── xxx.npy
-|	|	|	|	├── yyy.npy
-|	|	|	|	└── ...
+│   │   │   │   ├── xxx.npy
+│   │   │   │   ├── yyy.npy
+│   │   │   │   └── ...
 │   │   │   ├── photometric
-|	|	|	|	├── xxx.npy
-|	|	|	|	├── yyy.npy
-|	|	|	|	└── ...
+│   │   │   │   ├── xxx.npy
+│   │   │   │   ├── yyy.npy
+│   │   │   │   └── ...
 │   │   │   └── label
-|	|	|	|	└── label.csv
+│   │   │       └── label.csv
 │   │   ├── val
 │   │   │   ├── spectrum
-|	|	|	|	├── xxx.npy
-|	|	|	|	├── yyy.npy
-|	|	|	|	└── ...
+│   │   │   │   ├── xxx.npy
+│   │   │   │   ├── yyy.npy
+│   │   │   │   └── ...
 │   │   │   ├── photometric
-|	|	|	|	├── xxx.npy
-|	|	|	|	├── yyy.npy
-|	|	|	|	└── ...
+│   │   │   │   ├── xxx.npy
+│   │   │   │   ├── yyy.npy
+│   │   │   │   └── ...
 │   │   │   └── label
-|	|	|	|	└── label.csv
+│   │   │       └── label.csv
 │   │   ├── test
 │   │   │   ├── spectrum
-|	|	|	|	├── xxx.npy
-|	|	|	|	├── yyy.npy
-|	|	|	|	└── ...
+│   │   │   │   ├── xxx.npy
+│   │   │   │   ├── yyy.npy
+│   │   │   │   └── ...
 │   │   │   ├── photometric
-|	|	|	|	├── xxx.npy
-|	|	|	|	├── yyy.npy
-|	|	|	|	└── ...
+│   │   │   │   ├── xxx.npy
+│   │   │   │   ├── yyy.npy
+│   │   │   │   └── ...
 │   │   │   └── label
-|	|	|	|	└── label.csv
+│   │   │       └── label.csv
 │   ├── fold 2
 │   │   ├── ...
 │   ├── fold 3
