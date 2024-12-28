@@ -1,6 +1,7 @@
 import math
 import os
 
+import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -169,7 +170,7 @@ def plot_distribution(
         title: str,
         xlabel: str,
         ylabel: str,
-        colormap: str = 'viridis'
+        colormap: str = 'viridis',
 ):
     assert pred_res.shape == label_res.shape, '[Error] pred_res.shape must equal to label_res.shape'
     header = ['label', 'pred']
@@ -184,29 +185,27 @@ def plot_distribution(
     df['dist'] = np.abs(df['label'] - df['pred'])
     dist_max = df['dist'].max()
     dist_min = df['dist'].min()
-    df['dist'] = (df['dist'] - dist_min) / (dist_max - dist_min)
-    sns.scatterplot(
-        x='label',
-        y='pred',
-        data=df,
-        alpha=0.8,
-        palette=colormap,
-        hue=df['dist'],
-        markers='o',
-        legend=False,
-        ax=ax1,
+    # df['dist'] = (df['dist'] - dist_min) / (dist_max - dist_min)
+    scatter = ax1.scatter(
+        df['label'],
+        df['pred'],
+        c=df['dist'],
+        marker='o',
+        s=16,
+        edgecolors='none',
+        norm=colors.Normalize(vmin=dist_min, vmax=dist_max),
+        cmap=colormap,
     )
+    ax1.tick_params(axis='both', direction='in')
     ax1.set_xlabel(xlabel, fontweight='bold', fontsize=16)
     ax1.set_ylabel(ylabel, fontweight='bold', fontsize=16)
     ax1.set_title(title, fontweight='bold', fontsize=16)
-    ax1.grid(color='gray', linestyle='--', linewidth=0.5)
-
     # add colorbar by cax
     divider = make_axes_locatable(ax1)
     cax = divider.append_axes('right', size='5%', pad=0.1)
-    sm = plt.cm.ScalarMappable(cmap=colormap, norm=plt.Normalize(vmin=dist_min, vmax=dist_max))
-    sm._A = []
-    fig.colorbar(sm, cax=cax, orientation='vertical')
+    # sm = plt.cm.ScalarMappable(cmap=colormap, norm=plt.Normalize(vmin=dist_min, vmax=dist_max))
+    # sm._A = []
+    fig.colorbar(scatter, cax=cax, orientation='vertical')
 
     plt.tight_layout()
     plt.savefig(save_path)
@@ -281,118 +280,16 @@ def interpolation_ndarray_1d(
     return output_ndarray
 
 
-def plot_attn_in_spec(
-        data_id: str,
-        se_attn_weights: np.ndarray,
-        input_spec: np.ndarray,
-        input_wavelength: np.ndarray,
-        input_padding_half: int,
-        save_path: str,
-        attn_threshold: float = 0.6,
-        color_str='r',
-        x_axis_offset=4000,
-        interpolation_size=5000,
-):
-    """
-    Plot attention weights in spectrum
-    :param data_id: str
-    :param se_attn_weights: L x 1 ndarray
-    :param input_spec: LS x 1 ndarray
-    :param input_wavelength: LS x 1 ndarray
-    :param input_padding_half: int
-    :param save_path:
-    :param attn_threshold: float
-    :param color_str: str
-    :param x_axis_offset: int
-    :param interpolation_size: int
-    :return:
-    """
-    try:
-        need_attention_area = [
-            [5164, 5166],
-            [4554, 4555],
-            [4178, 4181],
-            [4312, 4313],
-            [5128, 5131],
-            [5325, 5327],
-            [4195, 4198],
-            [4859, 4863],
-            [4301, 4305],
-            [4395, 4396],
-            [4078, 4080],
-            [4373, 4375],
-        ]
-        # input_spec from 1 x LS to LS x 1
-        input_spec = np.transpose(input_spec, (1, 0))
-        # interpolation input_spec
-        input_spec = interpolation_ndarray_1d(
-            input_spec.squeeze()[input_padding_half:-input_padding_half],
-            input_wavelength,
-            interpolation_size,
-        )
-        # se_attn_weights min-max norm
-        se_attn_weights = (se_attn_weights - se_attn_weights.min()) / (se_attn_weights.max() - se_attn_weights.min())
-        se_attn_weights = interpolation_ndarray_1d(
-            se_attn_weights.squeeze(),
-            np.arange(se_attn_weights.shape[0]),
-            interpolation_size
-        )
-        _fig = plt.figure(figsize=(10, 5), dpi=300)
-        # plot spec with x-axis offset
-        spec = plt.plot(
-            np.arange(x_axis_offset, x_axis_offset + interpolation_size),
-            input_spec,
-            color='#6495ed'
-        )
-        # plot attn by threshold
-        for i in range(interpolation_size):
-            if se_attn_weights[i] > attn_threshold:
-                plt.axvline(x=i + x_axis_offset, color=color_str, linewidth=1, alpha=0.1)
-        # plot attn area just for legend
-        attn_area = plt.axvspan(
-            0 + x_axis_offset,
-            0 + x_axis_offset,
-            0,
-            0,
-            color=color_str,
-            alpha=0.8
-        )
-        # plot need_attention_area
-        for idx, area in enumerate(need_attention_area):
-            phy_area = plt.axvspan(
-                area[0],
-                area[1],
-                color='#FA7921',
-                alpha=0.8
-            )
-        plt.title('LAMOST OBSID: {}'.format(data_id), fontweight='bold', fontsize=14)
-        plt.xlabel('Wavelength', fontweight='bold', fontsize=14)
-        plt.ylabel(r'Flux [$\mathrm{erg\;s^{-1}\;cm^{-2}\;\AA^{-1}}$]', fontweight='bold', fontsize=14)
-        # plot attn legend
-        plt.legend(
-            [spec[0], attn_area, phy_area],
-            ['Spectrum', 'Model Attention Area', 'Important wavelength ranges of Mass & Age'],
-            loc='lower right',
-            fontsize=6,
-            bbox_to_anchor=(1, 1),
-        )
-        _fig.tight_layout()
-        _fig.savefig(save_path)
-        plt.close()
-    except Exception as e:
-        print('[Error] Plot {} failed: {}'.format(data_id, e))
-
-
 if __name__ == '__main__':
-    model_save_path = 'Where Your Model Weight Path'
-    cross_val = 'The Cross Validation Fold Name'
+    model_save_path = 'Your .ckpt weight path'
+    cross_val = 'Your dataset cross validation fold name'
     device = torch.device('cuda:0')
     res_save_path = './result_snr10/{}'.format(
         os.path.basename(model_save_path).split('.ckpt')[0]
     )
     step_snr = 10
     attn_threshold = 0.5
-    plot_spec_attn = False  # if True, plot attention weights in spectrum, it will cost very long time.
+    plot_heatmap = True  # if plot se attn heatmap, it cost a lot of time if set True
 
     pred_list, snr_init, without_id_pred_list, without_id_pred_list_by_snr, se_weights, spec_dataset = inference(
         config,
@@ -410,24 +307,23 @@ if __name__ == '__main__':
     os.makedirs(os.path.join(res_save_path, 'heatmap', 'pdf'))
     os.makedirs(os.path.join(res_save_path, 'heatmap', 'png'))
     spec_attn_save_path = os.path.join(res_save_path, 'spec_attn')
-    if plot_spec_attn:
-        os.makedirs(spec_attn_save_path)
     save_pred_res(without_id_pred_list, '{}/pred_res.npy'.format(res_save_path))
 
     # se attn heatmap
-    for i in tqdm(range(len(se_weights))):
-        plot_weight_heatmap(
-            se_weights[i]['weight'],
-            '{}/se_attn_heatmap_{}.pdf'.format(os.path.join(res_save_path, 'heatmap', 'pdf'),
-                                               se_weights[i]['data_id'][0]),
-            norm=True,
-        )
-        plot_weight_heatmap(
-            se_weights[i]['weight'],
-            '{}/se_attn_heatmap_{}.png'.format(os.path.join(res_save_path, 'heatmap', 'png'),
-                                               se_weights[i]['data_id'][0]),
-            norm=True,
-        )
+    if plot_heatmap:
+        for i in tqdm(range(len(se_weights))):
+            plot_weight_heatmap(
+                se_weights[i]['weight'],
+                '{}/se_attn_heatmap_{}.pdf'.format(os.path.join(res_save_path, 'heatmap', 'pdf'),
+                                                   se_weights[i]['data_id'][0]),
+                norm=True,
+            )
+            plot_weight_heatmap(
+                se_weights[i]['weight'],
+                '{}/se_attn_heatmap_{}.png'.format(os.path.join(res_save_path, 'heatmap', 'png'),
+                                                   se_weights[i]['data_id'][0]),
+                norm=True,
+            )
 
     # mae
     total_mass_m_sun, total_age_gyr, by_snr_mass_m_sun, by_snr_age_gyr = metric(
@@ -487,46 +383,32 @@ if __name__ == '__main__':
         without_id_pred_list[:, 1],
         without_id_pred_list[:, -2],
         os.path.join(res_save_path, 'spf_mass_m_sun_distribution.pdf'),
-        r'SPFusion $Mass_\odot$ Distribution',
-        'Label',
-        'Prediction'
+        r'SPFusion Mass ($m_\odot$) Distribution',
+        'True Value',
+        'Predicted Value'
     )
     plot_distribution(
         without_id_pred_list[:, 2],
         without_id_pred_list[:, -1],
         os.path.join(res_save_path, 'spf_age_gyr_distribution.pdf'),
-        r'SPFusion $Age_{Gyr}$ Distribution',
-        'Label',
-        'Prediction'
+        r'SPFusion Age (Gyr) Distribution',
+        'True Value',
+        'Predicted Value'
     )
     # distribution .png
     plot_distribution(
         without_id_pred_list[:, 1],
         without_id_pred_list[:, -2],
         os.path.join(res_save_path, 'spf_mass_m_sun_distribution.png'),
-        r'SPFusion $Mass_\odot$ Distribution',
-        'Label',
-        'Prediction'
+        r'SPFusion Mass ($m_\odot$) Distribution',
+        'True Value',
+        'Predicted Value'
     )
     plot_distribution(
         without_id_pred_list[:, 2],
         without_id_pred_list[:, -1],
         os.path.join(res_save_path, 'spf_age_gyr_distribution.png'),
-        r'SPFusion $Age_{Gyr}$ Distribution',
-        'Label',
-        'Prediction'
+        r'SPFusion Age (Gyr) Distribution',
+        'True Value',
+        'Predicted Value'
     )
-
-    if plot_spec_attn:
-        for i in tqdm(range(len(se_weights))):
-            for data_idx in range(len(se_weights[i]['data_id'])):
-                plot_attn_in_spec(
-                    se_weights[i]['data_id'][data_idx],
-                    se_weights[i]['weight'][data_idx][64:],
-                    spec_dataset[i]['spectrum'][data_idx],
-                    spec_dataset[i]['wavelength'][data_idx],
-                    spec_dataset[i]['padding_half'][data_idx],
-                    os.path.join(spec_attn_save_path, 'obsid_{}.pdf'.format(se_weights[i]['data_id'][data_idx])),
-                    attn_threshold=attn_threshold,
-                    color_str='#FDE74C',
-                )
