@@ -30,7 +30,7 @@
 
 See more configuration in [config/config.py](./config/config.py)
 
-## Weights Download
+## Pretrained Weights Download
 
 - `.ckpt` format for PyTorch: [weights.ckpt](./weights/weights.ckpt)
 - `.onnx` format for ONNX: [model.onnx](./weights/model.onnx)
