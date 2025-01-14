@@ -96,6 +96,17 @@ class BuildDataset(torch.utils.data.Dataset):
         return data_id, snr, padding_half, wavelength, spectrum, photometric, label
 
 
+def custom_collate_fn(batch):
+    data_ids = [item[0] for item in batch]
+    snrs = [item[1] for item in batch]
+    padding_halves = [item[2] for item in batch]
+    wavelengths = [item[3] for item in batch]
+    spectra = torch.stack([item[4] for item in batch])
+    photometrics = torch.stack([item[5] for item in batch])
+    labels = torch.stack([item[6] for item in batch])
+    return data_ids, snrs, padding_halves, wavelengths, spectra, photometrics, labels
+
+
 def build_dataloader(config: dict, mode: str, cross_val_name: str = '') -> torch.utils.data.DataLoader:
     """
     build dataloader
@@ -134,6 +145,7 @@ def build_dataloader(config: dict, mode: str, cross_val_name: str = '') -> torch
         dataset=_dataset,
         batch_size=config['batch_size'],
         shuffle=True if mode == 'train' else False,
+        collate_fn=custom_collate_fn,
         num_workers=config['num_workers'],
         pin_memory=True,
         drop_last=False
