@@ -199,7 +199,7 @@ def train_with_params_search(
         config['optimizer'] = optimizer
         config['poolformer'] = poolformer
 
-    # torch.set_float32_matmul_precision('high')
+    torch.set_float32_matmul_precision('high')
     if config['verbose']:
         print('config:', config)
         # build model
