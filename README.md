@@ -1,5 +1,7 @@
 # SPFusion: A Lightweight Multi-Modality Deep Learning Model for Red Clump Stars Parameters Estimation
 
+![![Static Badge](https://img.shields.io/badge/Download_Paper-green?style=flat-square)](https://github.com/qintianjian-lab/SPFusion)
+
 ![Comp](./img/metrics_params.png)
 
 ![SPFusion Architecture](./img/SPFusion.png)
